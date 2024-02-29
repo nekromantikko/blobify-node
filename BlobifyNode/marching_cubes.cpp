@@ -403,10 +403,6 @@ void polygonizeMetaballs(const MPointArray& metaballOrigins, float threshold, fl
 	MPoint start = MPoint(xCubeMin, yCubeMin, zCubeMin) * triangleSize;
 	int cubeCount = gridWidth * gridHeight * gridDepth;
 
-	char debugStr[256];
-	sprintf_s(debugStr, "grid: (%d, %d, %d), cube count %d\n", gridWidth, gridHeight, gridDepth, cubeCount);
-	MGlobal::displayInfo(debugStr);
-
 	unsigned int vertCount = 0;
 	unsigned int idxCount = 0;
 	outVertices = MFloatPointArray(cubeCount * 12);
@@ -444,9 +440,6 @@ void polygonizeMetaballs(const MPointArray& metaballOrigins, float threshold, fl
 			}
 		}
 	}
-
-	sprintf_s(debugStr, "222Output mesh vert count = %d, index count = %d\n", outVertices.length(), outIndices.length());
-	MGlobal::displayInfo(debugStr);
 
 	outVertices.setLength(vertCount);
 	outNormals.setLength(vertCount);

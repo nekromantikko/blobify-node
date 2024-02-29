@@ -100,16 +100,6 @@ MStatus BlobifyNode::compute(const MPlug& plug, MDataBlock& data) {
 	MIntArray outIndices;
 	polygonizeMetaballs(meshPoints, threshold, triSize, bounds, outVertices, outNormals, outIndices);
 
-	char debugStr[256];
-	sprintf_s(debugStr, "Polygonized mesh with %d points\n", meshPoints.length());
-	MGlobal::displayInfo(debugStr);
-
-	sprintf_s(debugStr, "Output mesh vert count = %d, index count = %d\n", outVertices.length(), outIndices.length());
-	MGlobal::displayInfo(debugStr);
-
-	sprintf_s(debugStr, "Threshold = %f, triSize = %f\n", threshold, triSize);
-	MGlobal::displayInfo(debugStr);
-
 	unsigned int triCount = outIndices.length() / 3;
 	MIntArray polygonCounts(triCount, 3);
 
