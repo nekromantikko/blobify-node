@@ -1,0 +1,6 @@
+createNode polyPlatonic -n polyPlatonic1;
+createNode transform -n blobMesh1;
+createNode mesh -n blobMeshShape1 -p blobMesh1;
+createNode blobifyMesh -n blobifyMesh1;
+connectAttr polyPlatonic1.output blobifyMesh1.inMesh;
+connectAttr blobifyMesh1.outMesh blobMeshShape1.inMesh;

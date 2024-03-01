@@ -22,6 +22,11 @@ public:
 	static MObject inThreshold;
 	static MObject inTriSize;
 
+	static MObject inBboxWidth;
+	static MObject inBboxHeight;
+	static MObject inBboxDepth;
+	static MObject inBboxSize;
+
 	static MObject outMesh;
 };
 
@@ -30,6 +35,10 @@ const MTypeId BlobifyNode::id(0x70000);
 MObject BlobifyNode::inMesh;
 MObject BlobifyNode::inThreshold;
 MObject BlobifyNode::inTriSize;
+MObject BlobifyNode::inBboxWidth;
+MObject BlobifyNode::inBboxHeight;
+MObject BlobifyNode::inBboxDepth;
+MObject BlobifyNode::inBboxSize;
 MObject BlobifyNode::outMesh;
 
 void* BlobifyNode::creator() {
@@ -44,18 +53,32 @@ MStatus BlobifyNode::initialize() {
 	addAttribute(inMesh);
 
 	inThreshold = fnAttrib.create("threshold", "th", MFnNumericData::kFloat, 10.0f);
-	fnAttrib.setReadable(false);
 	fnAttrib.setKeyable(true);
 	fnAttrib.setSoftMin(0.0f);
 	fnAttrib.setSoftMax(25.0f);
 	addAttribute(inThreshold);
 
 	inTriSize = fnAttrib.create("meshTriangleSize", "ts", MFnNumericData::kFloat, 0.1f);
-	fnAttrib.setReadable(false);
 	fnAttrib.setKeyable(true);
-	fnAttrib.setSoftMin(0.001f);
+	fnAttrib.setSoftMin(0.05f);
 	fnAttrib.setSoftMax(10.0f);
 	addAttribute(inTriSize);
+
+	inBboxWidth = fnAttrib.create("boundsWidth", "bbw", MFnNumericData::kFloat, 5.0f);
+	fnAttrib.setKeyable(true);
+	fnAttrib.setSoftMin(0.1f);
+	fnAttrib.setSoftMax(100.0f);
+	inBboxHeight = fnAttrib.create("boundsHeight", "bbh", MFnNumericData::kFloat, 5.0f);
+	fnAttrib.setKeyable(true);
+	fnAttrib.setSoftMin(0.1f);
+	fnAttrib.setSoftMax(100.0f);
+	inBboxDepth = fnAttrib.create("boundsDepth", "bbd", MFnNumericData::kFloat, 5.0f);
+	fnAttrib.setKeyable(true);
+	fnAttrib.setSoftMin(0.1f);
+	fnAttrib.setSoftMax(100.0f);
+	inBboxSize = fnAttrib.create("bounds", "bbs", inBboxWidth, inBboxHeight, inBboxDepth);
+	fnAttrib.setKeyable(true);
+	addAttribute(inBboxSize);
 
 	outMesh = fnTypedAttrib.create("outMesh", "om", MFnData::kMesh);
 	fnTypedAttrib.setWritable(false);
@@ -64,6 +87,7 @@ MStatus BlobifyNode::initialize() {
 	attributeAffects(inMesh, outMesh);
 	attributeAffects(inThreshold, outMesh);
 	attributeAffects(inTriSize, outMesh);
+	attributeAffects(inBboxSize, outMesh);
 
 	return MStatus::kSuccess;
 }
@@ -91,8 +115,10 @@ MStatus BlobifyNode::compute(const MPlug& plug, MDataBlock& data) {
 	MDataHandle inTriSizeHandle = data.inputValue(inTriSize);
 	const float triSize = inTriSizeHandle.asFloat();
 
-	// Test stuff
-	MPoint corner(2.0f, 2.0f, 2.0f, 1.0f);
+	MDataHandle inBboxSizeHandle = data.inputValue(inBboxSize);
+	const MFloatVector bboxSize = inBboxSizeHandle.asFloatVector();
+
+	MPoint corner = bboxSize / 2.0f;
 	MBoundingBox bounds(corner * -1, corner);
 
 	MFloatPointArray outVertices;
